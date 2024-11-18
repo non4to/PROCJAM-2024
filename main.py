@@ -17,6 +17,8 @@ class Game():
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.toogle_pause()
+                    elif event.key == pygame.K_r:
+                        self.meteor()
 
             self.update()
             self.before_draw()
@@ -65,11 +67,18 @@ class Game():
 
     def update_screen(self):
         #draw mouse
-        self.canvas.set_at((self.mouse_pos[0],self.mouse_pos[1]), (255,0,255))
+        #self.canvas.set_at((self.mouse_pos[0],self.mouse_pos[1]), (255,0,255))
         scaled_canvas = pygame.transform.scale(self.canvas, self.screen_size)
         self.screen.blit(scaled_canvas, (0, 0))  # Draw scaled canvas on the screen
         pygame.display.update() 
         self.clock.tick(self.fps_cap) #TODO: Option to change this value
+
+    def meteor(self):
+        """Cleans whole screen"""
+        for x,y in self.grid_obj.occupied_space:
+            self.grid_obj.grid[x][y] = None
+        self.grid_obj.occupied_space = set()
+        self.canvas.fill((0, 0, 0)) 
 
     def get_mouse_position(self) -> tuple:
         mouse_pos = pygame.mouse.get_pos()
