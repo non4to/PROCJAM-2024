@@ -14,9 +14,9 @@ class Game:
         self.textbox_list = []
         self.button_list = []
         self.configuration_start(window_title=window_title)
-        # self.plants_list.append(RGPlant(63,63,(255,0,0)))
 
-    async def start_game(self):
+    #async 
+    def start_game(self):
         while not self.exit:
             events = pygame.event.get()
             for event in events:
@@ -30,32 +30,35 @@ class Game:
             self.before_draw()
             self.draw()
             self.update_screen()
-            await asyncio.sleep(0)
+            #await asyncio.sleep(0)
 
     def update(self, events):
         new_plants = []
         marked_for_death = []
         random.shuffle(self.plants_list)
         self.mouse_pos = self.get_mouse_position()
+        if self.button_list[0].active:
+                self.new_gene = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.manage_mouse_clicks(events)
 
         # Not Paused
         if not self.pause:
             if self.plants_list:
                 for plant in self.plants_list:
-                    death, new_plants = plant.update(self.plants_list)
+                    death, new_plants, self.grid = plant.update(self.grid)
                     if death:
                         marked_for_death.append(plant)
-
-            if new_plants:
-                for x, y, gene in new_plants:
-                    self.add_plant_to_position(x, y, gene, PLANTS_CONS)
 
             if marked_for_death:
                 plants_list_set = set(self.plants_list)
                 for plant in marked_for_death:
                     plants_list_set.remove(plant)
+                    self.grid[(plant.x,plant.y)] = []
                 self.plants_list = list(plants_list_set)
+
+            if new_plants:
+                for x, y, gene in new_plants:
+                    self.add_plant_to_position(x, y, gene, PLANTS_CONS)
         # Paused
         else:
             for textbox in self.textbox_list:
@@ -106,6 +109,7 @@ class Game:
         self.canvas.fill((0, 0, 0))
 
     def update_screen(self):
+
         # draw mouse
         self.canvas.set_at((self.mouse_pos[0], self.mouse_pos[1]), self.new_gene)
         scaled_canvas = pygame.transform.scale(self.canvas, self.screen_size)
@@ -115,9 +119,8 @@ class Game:
         # font = pygame.font.SysFont(None, 12)  # Use default font and size 36
         # fps_text = font.render(f"{fps:.2f}", True, (255, 255, 255))  # Render FPS text
         # self.screen.blit(fps_text, (self.screen_size[0] - 12, 0))
-
-        pygame.display.update()
         self.clock.tick(self.fps_cap)  # TODO: Option to change this value
+        pygame.display.update()
 
     def get_mouse_position(self) -> tuple:
         mouse_pos = pygame.mouse.get_pos()
@@ -172,13 +175,19 @@ class Game:
                     textbox.active = False
 
     def add_plant_to_position(self, x: int, y: int, gene, PLANTS_CONS: dict):
-        plants_list_set = set(self.plants_list)
-        for plant in self.plants_list:
-            if (plant.x == x) and (plant.y == y):
-                self.plants_list.remove(plant)
-                break
-        self.plants_list = list(plants_list_set)
-        self.plants_list.append(RGPlant(x, y, gene, self.neighbor_dict, PLANTS_CONS))
+        if x>=0 and y>=0 and x<=self.resolution[0] and y<=self.resolution[0]:
+            plants_list_set = set(self.plants_list)
+            for plant in self.plants_list:
+                if (plant.x == x) and (plant.y == y):
+                    self.plants_list.remove(plant)
+                    self.grid[(plant.x,plant.y)] = []
+                    break
+            self.plants_list = list(plants_list_set)
+            new_plant = RGPlant(x, y, gene, self.neighbor_dict, PLANTS_CONS, tuple(self.neighbor_dict[(x,y)]))
+            self.plants_list.append(new_plant)
+
+            if (x,y) not in self.grid: self.grid[(x,y)] = [new_plant]
+            else: self.grid[(x,y)].append(new_plant)
 
     def configuration_start(self, window_title):
         pygame.init()
@@ -186,6 +195,7 @@ class Game:
         pygame.mouse.set_visible(False)
         self.resolution = SCREEN_DATA["RESOLUTION"]
         self.screen_size = SCREEN_DATA["SCREEN_SIZE"]
+        self.grid = {}
         self.canvas = pygame.Surface(self.resolution)
         self.screen = pygame.display.set_mode(self.screen_size)
         self.x_screen_scale = self.resolution[0] / self.screen_size[0]
@@ -269,8 +279,8 @@ class Game:
         )
 
     def Build_Neighbor_Dict(self):
-        X_MAX = self.resolution[0]
-        Y_MAX = self.resolution[1]
+        X_MAX = self.resolution[0]+1
+        Y_MAX = self.resolution[1]+1
         neighbors_dict = {}
 
         neighbors_dict[(0, 0)] = [(0, 1), (1, 0), (1, 1)]
@@ -299,10 +309,10 @@ class Game:
                                 neighbors_dict[key].append((x + ix, y + iy))
         return neighbors_dict
 
-    def run(self):
-        asyncio.run(self.start_game())
-
+    # def run(self):
+    #     asyncio.run(self.start_game())
 
 if __name__ == "__main__":
     game = Game()
-    game.run()
+    game.start_game()
+    # game.run()
