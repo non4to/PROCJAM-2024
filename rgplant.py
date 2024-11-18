@@ -1,12 +1,13 @@
+from __future__ import annotations
 import pygame,random, uuid
-from CONS import PLANTS_CONS
+from CONS import PLANTS_CONS, SCREEN_DATA
 WHITE = (255,255,255)
 MITOSIS_CHANCE = PLANTS_CONS["MITOSIS_CHANCE"]
 DEATH_CHANCE = PLANTS_CONS["DEATH_CHANCE"]
 MUTATION_CHANCE = PLANTS_CONS["MUTATION_CHANCE"]
 
 class RGPlant():
-    def __init__(self, x:int, y:int, gene:list):
+    def __init__(self, x:int, y:int, gene:tuple):
         self.id = uuid.uuid1()
         self.x = x
         self.y = y
@@ -24,52 +25,49 @@ class RGPlant():
             == (value.id)
         )
 
-    def update(self,all_plants):
-        new_plants = []
-        death = False
-        neighbors = self.get_neighbors(all_plants)
-        self.color = self.update_color(neighbors)
+    def update(self,grid_obj:"Grid") -> "Grid":
+        self.color = self.update_color(grid_obj)
         dice = random.random()
         if dice <= MITOSIS_CHANCE:
-            new_plants = self.mitosis()
+            grid_obj = self.mitosis(grid_obj)
         elif dice <= MITOSIS_CHANCE + DEATH_CHANCE:
-            death = True
-        return death, new_plants
+            grid_obj.remove_plant(x=self.x,y=self.y)
+        return grid_obj
 
     def draw(self,canvas):
         #pygame.draw.rect(canvas,WHITE,self.neighbor_region)
         canvas.set_at((self.x,self.y), self.color)
         return canvas
 
-    def get_neighbors(self,all_plants):
-        neighbors = []
-        for plant in all_plants:
-            if self.neighbor_region.colliderect(plant.body):
-                neighbors.append(plant)
-        return neighbors
-
-    def update_color(self,neighbors):
-        color=[0,0,0]
+    def update_color(self,grid_obj):
+        neighbors = grid_obj.get_neighbors(x=self.x,y=self.y)
+        color=[self.gene[0],self.gene[1],self.gene[2]]
+        total_neighbors = 1
         if neighbors:
-            for plant in neighbors:
-                color[0] += plant.gene[0]
-                color[1] += plant.gene[1]
-                color[2] += plant.gene[2]
+            # print(neighbors)
+            for x,y in neighbors:
+                if (x,y) in grid_obj.occupied_space:
+                    total_neighbors += 1
+                    color[0] += grid_obj.grid[x][y].gene[0]
+                    color[1] += grid_obj.grid[x][y].gene[1]
+                    color[2] += grid_obj.grid[x][y].gene[2]
             
             for i,value in enumerate(color):
-                color[i] = value/len(neighbors)
+                color[i] = value/total_neighbors
         return color
 
-    def mitosis(self):
+    def mitosis(self,grid_obj):
         gene = self.gene
         if random.random() < MUTATION_CHANCE: 
             gene = self.mutate(self.gene)
 
-        new_plants = []
         for x in range(-1,2):
             for y in range(-1,2):
-                    new_plants.append([self.x+x,self.y+y,gene])
-        return new_plants
+                if (
+                    (x+self.x < SCREEN_DATA["RESOLUTION"][0]) and (y+self.y< SCREEN_DATA["RESOLUTION"][1]) 
+                    and (x+self.x >=0) and (y+self.y>=0)):
+                    grid_obj.add_plant(x=self.x+x, y=self.y+y,gene=gene)
+        return grid_obj
                     
     def mutate(self, gene):
         gene = list(gene)
@@ -80,4 +78,4 @@ class RGPlant():
         else:
             gene[index] *= 0.75
             if gene[index] < 0: gene[index] = 0
-        return gene
+        return tuple(gene)
