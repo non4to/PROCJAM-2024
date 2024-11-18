@@ -58,12 +58,12 @@ class Game():
                 self.canvas = textbox.draw(self.canvas)
 ##############################################
 ##############################################
-##############################################
+#####################################_#########
 ##############################################
 ##############################################
     def before_draw(self):
         pass
-        #self.canvas.fill((255, 255, 255)) 
+        #self.canvas.fill((0, 0, 0)) 
 
     def update_screen(self):
         #draw mouse
@@ -100,6 +100,7 @@ class Game():
             #Pause Menu
             if self.pause:
                 for textbox in self.textbox_list:
+
                     if textbox.rect.collidepoint(self.mouse_pos[0],self.mouse_pos[1]):
                         textbox.active = True
                         self.toogle_textboxes(textbox)

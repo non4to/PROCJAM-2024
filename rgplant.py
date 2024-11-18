@@ -1,5 +1,5 @@
 from __future__ import annotations
-import pygame,random, uuid
+import pygame,random, uuid, math
 from CONS import PLANTS_CONS, SCREEN_DATA
 WHITE = (255,255,255)
 MITOSIS_CHANCE = PLANTS_CONS["MITOSIS_CHANCE"]
@@ -44,7 +44,6 @@ class RGPlant():
         color=[self.gene[0],self.gene[1],self.gene[2]]
         total_neighbors = 1
         if neighbors:
-            # print(neighbors)
             for x,y in neighbors:
                 if (x,y) in grid_obj.occupied_space:
                     total_neighbors += 1
@@ -52,8 +51,30 @@ class RGPlant():
                     color[1] += grid_obj.grid[x][y].gene[1]
                     color[2] += grid_obj.grid[x][y].gene[2]
             
+            fase = math.radians(30)
             for i,value in enumerate(color):
-                color[i] = value/total_neighbors
+                #average
+                #color[i] = value/total_neighbors  
+
+                #average but MOAR RED
+                # color[i] = value/total_neighbors 
+                # if i>0: color[i] *= 0.25
+
+                #average, but my color matters more.
+                if total_neighbors==1: color[i]=self.gene[i]
+                else:
+                    color[i] = (value-self.gene[i])/(total_neighbors-1)
+                    color[i] = (self.gene[i]*0.75+color[i]*0.25)
+
+                #another cool one
+                # color[i] = (self.gene[0]+self.gene[1]+self.gene[2])%255
+                # if color[i] > 255: color[i] = 255
+                
+                color[i] = int(color[i])
+                #print(color[i])
+            #color = self.gene
+            print(f"self: {self.color}, new: {color}")
+
         return color
 
     def mitosis(self,grid_obj):
@@ -73,9 +94,10 @@ class RGPlant():
         gene = list(gene)
         index = random.randint(0,2)
         if random.random() < 0.5:
-            gene[index] *= 1.25
+            gene[index] += 15
             if gene[index] > 255: gene[index] = 255
+            if gene[index] == 0: gene[index] = 10
         else:
-            gene[index] *= 0.75
+            gene[index] -= 15
             if gene[index] < 0: gene[index] = 0
         return tuple(gene)
