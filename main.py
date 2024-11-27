@@ -21,7 +21,7 @@ class Game():
                         self.meteor()
 
             self.update()
-            self.before_draw()
+            #self.before_draw()
             self.draw()
             self.update_screen()
 
@@ -62,8 +62,7 @@ class Game():
 ##############################################
 ##############################################
     def before_draw(self):
-        pass
-        #self.canvas.fill((0, 0, 0)) 
+        self.canvas.fill((0, 0, 0)) 
 
     def update_screen(self):
         #draw mouse
