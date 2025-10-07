@@ -1,4 +1,4 @@
-from rgplant import RGPlant
+from entities import RGPlant
 from CONS import SCREEN_DATA
 import typing
 import uuid, pickle, random as rd

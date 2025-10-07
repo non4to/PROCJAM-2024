@@ -1,7 +1,8 @@
 import pygame, random
 from CONS import SCREEN_DATA
-from rgplant import RGPlant
-from textbox import TextBox
+from entities import RGPlant, TextBox
+# from rgplant import RGPlant
+# from textbox import TextBox
 from grid import Grid
 
 class Game():
@@ -21,7 +22,7 @@ class Game():
                         self.meteor()
 
             self.update()
-            #self.before_draw()
+            self.before_draw()
             self.draw()
             self.update_screen()
 
@@ -56,11 +57,7 @@ class Game():
             #Text Boxes
             for textbox in self.textbox_list:
                 self.canvas = textbox.draw(self.canvas)
-##############################################
-##############################################
-#####################################_#########
-##############################################
-##############################################
+
     def before_draw(self):
         self.canvas.fill((0, 0, 0)) 
 
@@ -122,7 +119,6 @@ class Game():
     def configuration_start(self, window_title):
         pygame.init()
         pygame.font.init()
-        # pygame.mouse.set_v    isible(False)
         self.resolution = SCREEN_DATA["RESOLUTION"]
         self.screen_size = SCREEN_DATA["SCREEN_SIZE"]
         self.grid_obj = Grid(SCREEN_DATA["RESOLUTION"][0],SCREEN_DATA["RESOLUTION"][1])
@@ -149,7 +145,6 @@ class Game():
         self.textbox_list.append(TextBox(self.textbox_list[0].x+15,tbox_y_pos,tbox_width,tbox_height,(0,255,0),(0,125,0)))
         #blue box, most right
         self.textbox_list.append(TextBox(self.textbox_list[1].x+15,tbox_y_pos,tbox_width,tbox_height,(0,0,255),(0,0,125)))
-
         
 def main():
     A = Game()
