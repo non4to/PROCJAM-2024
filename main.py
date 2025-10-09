@@ -93,11 +93,12 @@ class Game():
             self.plantParameter["DEATH_CHANCE"] = float(self.textbox_list[4].text)/100
             self.plantParameter["MUTATION_CHANCE"] = float(self.textbox_list[5].text)/100
             
-    def draw (self):
+    def draw (self):        
         #plants
         for x,y in self.grid_obj.occupied_space:
             self.canvas = self.grid_obj.grid[x][y].draw(self.canvas)
-
+            
+        #config screen
         if self.configurationScreen:
             self.uiCanvas.blit(self.uiPauseText,self.uiPausePos)
             self.uiCanvas.blit(self.uiBrushText1,self.uiBrushTextPos1)
@@ -112,7 +113,8 @@ class Game():
             #Text Boxes
             for textbox in self.textbox_list:
                 self.uiCanvas = textbox.draw(self.uiCanvas)
-        
+                
+        #pause
         if self.pause:
             if random.random() < 0.01:
                 self.pauseColor = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
@@ -121,7 +123,6 @@ class Game():
             rect = pygame.Rect(0,0,SCREEN_DATA["SCREEN_SIZE"][0],SCREEN_DATA["SCREEN_SIZE"][1])
             pygame.draw.rect(self.pauseCanvas, self.pauseColor, rect, width)
             
-
     def before_draw(self):
         if (self.configurationScreen): self.uiCanvas.fill((0, 0, 0, 0))  
         pass
@@ -131,7 +132,6 @@ class Game():
         #self.canvas.set_at((self.mouse_pos[0],self.mouse_pos[1]), (255,0,255))
         scaled_canvas = pygame.transform.scale(self.canvas, self.screen_size)
         self.screen.blit(scaled_canvas, (0, 0))  # Draw scaled canvas on the screen
-        if (self.pause): self.screen.blit(self.pauseCanvas, (0,0))
         if (self.configurationScreen): self.screen.blit(self.uiCanvas, (0, 0))  # Draw scaled canvas on the screen
 
         pygame.display.update() 
