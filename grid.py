@@ -48,10 +48,10 @@ class Grid():
                         neighbors.append((x + ix, y + iy))
         return neighbors 
     
-    def add_plant(self, x:int, y:int, gene:tuple=[0]):
+    def add_plant(self, parameters:dict, x:int, y:int, gene:tuple=[0]):
         if self.grid[x][y]:
             self.remove_plant(x,y)
-        new_plant = RGPlant(x,y,gene)
+        new_plant = RGPlant(parameters,x,y,gene)
         self.grid[x][y] = new_plant
         self.occupied_space.add((x,y))
         return new_plant.id

@@ -1,13 +1,13 @@
 from __future__ import annotations
-import pygame,random, uuid, math
+import pygame,random, uuid, math, copy
 from CONS import PLANTS_CONS, SCREEN_DATA
 WHITE = (255,255,255)
-MITOSIS_CHANCE = PLANTS_CONS["MITOSIS_CHANCE"]
-DEATH_CHANCE = PLANTS_CONS["DEATH_CHANCE"]
-MUTATION_CHANCE = PLANTS_CONS["MUTATION_CHANCE"]
+# MITOSIS_CHANCE = PLANTS_CONS["MITOSIS_CHANCE"]
+# DEATH_CHANCE = PLANTS_CONS["DEATH_CHANCE"]
+# MUTATION_CHANCE = PLANTS_CONS["MUTATION_CHANCE"]
 
 class RGPlant():
-    def __init__(self, x:int, y:int, gene:tuple):
+    def __init__(self, parameters:dict, x:int, y:int, gene:tuple):
         self.id = uuid.uuid1()
         self.x = x
         self.y = y
@@ -15,6 +15,7 @@ class RGPlant():
         self.color = gene
         self.body = pygame.Rect(x,y,1,1)
         self.neighbor_region = pygame.Rect(self.x-1,self.y-1,3,3)
+        self.parameters = parameters
 
     def __hash__(self):
         return hash(self.id)
@@ -28,9 +29,9 @@ class RGPlant():
     def update(self,grid_obj:"Grid") -> "Grid":
         self.color = self.update_color(grid_obj)
         dice = random.random()
-        if dice <= MITOSIS_CHANCE:
+        if dice <= self.parameters["MITOSIS_CHANCE"]:
             grid_obj = self.mitosis(grid_obj,True)
-        elif dice <= MITOSIS_CHANCE + DEATH_CHANCE:
+        elif dice <= self.parameters["MITOSIS_CHANCE"] + self.parameters["DEATH_CHANCE"]:
             grid_obj.remove_plant(x=self.x,y=self.y)
         return grid_obj
 
@@ -43,9 +44,9 @@ class RGPlant():
         new_gene = []
         for i in range(len(self.gene)):
             #pick
-            new_gene.append(random.choice([self.gene[i],gene[i]]))
+            # new_gene.append(random.choice([self.gene[i],gene[i]]))
             #average
-            #new_gene.append((self.gene[i]+gene[i])/2)
+            new_gene.append((self.gene[i]+gene[i])/2)
         return new_gene
 
     def update_color(self,grid_obj):
@@ -101,10 +102,10 @@ class RGPlant():
                 if grid_obj.grid[new_cell[0]][new_cell[1]] and crossover:
                     new_gene = self.crossover(grid_obj.grid[new_cell[0]][new_cell[1]].gene)
                     
-                if random.random() < MUTATION_CHANCE: 
+                if random.random() < self.parameters["MUTATION_CHANCE"]: 
                     new_gene = self.mutate(new_gene)
                     
-                grid_obj.add_plant(x=new_cell[0], y=new_cell[1],gene=new_gene)
+                grid_obj.add_plant(parameters=copy.deepcopy(self.parameters) ,x=new_cell[0], y=new_cell[1],gene=new_gene)
 
         #mitosis in all neighbors
         # for x in range(-1,2):
@@ -128,22 +129,43 @@ class RGPlant():
         return tuple(gene)
 
 class TextBox():
-    def __init__(self,x:int, y:int, w:int, h:int,active_color:tuple, inactive_color:tuple):
+    def __init__(self, function:str, x:int, y:int, w:int, h:int,active_color:tuple, inactive_color:tuple, font: pygame.font.Font):
         self.x = x
         self.y = y
         self.rect = pygame.Rect(x,y,w,h)
         self.active_color = active_color
         self.inactive_color = inactive_color
         self.color = self.inactive_color
-        self.text = ""
-        self.active = False
+        self.text = "0"
+        self.active = False        
+        self.editing = False
+        self.font = font
+        self.function = function
 
     def update(self):
-        if self.active: self.color = self.active_color
-        else: self.color = self.inactive_color
-
+        if self.active: 
+            self.color = self.active_color
+            if float(self.text) < 0:
+                self.text = "0"
+            if (self.function=="brush") and (float(self.text) > 255): 
+                self.text = "255"   
+            elif (self.function=="param") and (float(self.text) > 100):
+                self.text = "100"   
+        else: self.color = self.inactive_color        
+        
     def draw(self,canvas):
         pygame.draw.rect(canvas,self.color,self.rect)
+        colorValue = self.font.render(self.text,True, (255,255,255))
+        canvas.blit(colorValue, [self.x+10, self.y+10])
         return canvas
     
-class Slider()
+class Slider():
+    def __init__(self, x:int, y:int, maxValue: float, minValue: float):
+        self.x = x
+        self.y = y
+        self.maxValue = maxValue
+        self.minValue = minValue
+        self.currentValue = 0
+        
+    def update():
+        pass
