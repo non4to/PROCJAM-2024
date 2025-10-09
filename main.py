@@ -133,7 +133,6 @@ class Game():
         #self.canvas.set_at((self.mouse_pos[0],self.mouse_pos[1]), (255,0,255))
         scaled_canvas = pygame.transform.scale(self.canvas, self.screen_size)
         self.screen.blit(scaled_canvas, (0, 0))  # Draw scaled canvas on the screen
-        if (self.pause): self.screen.blit(self.pauseCanvas, (0,0))
         if (self.configurationScreen): self.screen.blit(self.uiCanvas, (0, 0))  # Draw scaled canvas on the screen
 
         pygame.display.update() 
