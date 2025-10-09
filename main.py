@@ -5,10 +5,24 @@ from entities import RGPlant, TextBox
 # from textbox import TextBox
 from grid import Grid
 
+from typing import Optional
+from pathlib import Path
+from load_image import load_image
+
+
 class Game():
-    def __init__(self,window_title:str="RGPlants"):
+    def __init__(self, window_title: str="RGPlants", load_initial_image: Optional[Path] = None):
         self.textbox_list = []
         self.configuration_start(window_title=window_title)
+
+        # Load image for test
+        if load_initial_image:
+            assert isinstance(load_initial_image, Path), "load_initial_image must be a pathlib.Path object"
+            assert load_initial_image.exists(), f"File {load_initial_image} does not exist"
+            img = load_image(load_initial_image, (self.resolution[0], self.resolution[1]))
+            for i in range(self.resolution[0]):
+                for j in range(self.resolution[1]):
+                    self.add_plant_to_position(copy.deepcopy(self.plantParameter), i, j, img[j][i].tolist())
 
     def game_loop(self):
         while not self.exit:
@@ -248,8 +262,9 @@ class Game():
         
         
 def main():
-    A = Game()
+    A = Game(load_initial_image=Path("flamengo.jpg"))
     A.game_loop()
+
 
 if __name__ == "__main__":
     main()
