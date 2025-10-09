@@ -111,6 +111,7 @@ class Game():
             
     def before_draw(self):
         if (self.configurationScreen): self.uiCanvas.fill((0, 0, 0, 0))  
+        if (self.pause): self.pauseCanvas.fill((0,0,0,0))
         pass
         
     def update_screen(self):
@@ -118,6 +119,7 @@ class Game():
         #self.canvas.set_at((self.mouse_pos[0],self.mouse_pos[1]), (255,0,255))
         scaled_canvas = pygame.transform.scale(self.canvas, self.screen_size)
         self.screen.blit(scaled_canvas, (0, 0))  # Draw scaled canvas on the screen
+        if (self.pause): self.screen.blit(self.pauseCanvas, (0,0))
         if (self.configurationScreen): self.screen.blit(self.uiCanvas, (0, 0))  # Draw scaled canvas on the screen
 
         pygame.display.update() 
@@ -198,7 +200,7 @@ class Game():
         ## UI ##
         self.pauseColor = (255,255,255)
         self.uiCanvas = pygame.Surface(self.screen_size)
-        self.pauseCanvas = pygame.Surface(self.screen_size)
+        self.pauseCanvas = pygame.Surface(self.screen_size, pygame.SRCALPHA)
         
         self.uiFontBIG = pygame.font.Font(None,53)
         self.uiFontMID = pygame.font.Font(None,24)
