@@ -5,6 +5,7 @@ from typing import Optional
 from pathlib import Path
 from load_image import load_image
 from grid import Grid
+import asyncio
 
 class Game():
     # def __init__(self,window_title:str="RGPlants"):
@@ -13,15 +14,15 @@ class Game():
         self.configuration_start(window_title=window_title)
         
         # Load image for test
-        if load_initial_image:
-            assert isinstance(load_initial_image, Path), "load_initial_image must be a pathlib.Path object"
-            assert load_initial_image.exists(), f"File {load_initial_image} does not exist"
-            img = load_image(load_initial_image, (self.resolution[0], self.resolution[1]))
-            for i in range(self.resolution[0]):
-                for j in range(self.resolution[1]):
-                    self.add_plant_to_position(copy.deepcopy(self.plantParameter), i, j, img[j][i].tolist())
+        # if load_initial_image:
+        #     assert isinstance(load_initial_image, Path), "load_initial_image must be a pathlib.Path object"
+        #     assert load_initial_image.exists(), f"File {load_initial_image} does not exist"
+        #     img = load_image(load_initial_image, (self.resolution[0], self.resolution[1]))
+        #     for i in range(self.resolution[0]):
+        #         for j in range(self.resolution[1]):
+        #             self.add_plant_to_position(copy.deepcopy(self.plantParameter), i, j, img[j][i].tolist())
 
-    def game_loop(self):
+    async def game_loop(self):
         while not self.exit:
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
@@ -77,6 +78,7 @@ class Game():
             self.before_draw()
             self.draw()
             self.update_screen()
+            
 
     def update (self):
         if not(self.startMenu):
@@ -307,9 +309,9 @@ class Game():
 
         
         
-def main():
-    A = Game(load_initial_image=Path("img.jpg"))
-    A.game_loop()
+async def main():
+    A = Game()
+    await A.game_loop()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
