@@ -8,6 +8,8 @@ from grid import Grid
 from typing import Optional
 from pathlib import Path
 from load_image import load_image
+import sys
+import os
 
 
 class Game():
@@ -267,8 +269,14 @@ class Game():
         self.textbox_list[5].text = str(int(self.plantParameter["MUTATION_CHANCE"]*100))
         
 def main():
-    A = Game(load_initial_image=Path("img.jpg"))
+    # A = Game(load_initial_image=Path("img.jpg"))
+    A = Game(load_initial_image=Path(resource_path("img.jpg")))
     A.game_loop()
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 
 if __name__ == "__main__":
