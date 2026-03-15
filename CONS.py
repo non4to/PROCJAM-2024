@@ -5,7 +5,7 @@ SCREEN_DATA = {
 }
 
 PLANTS_CONS = {
-    "MITOSIS_CHANCE" : 0,
+    "MITOSIS_CHANCE" : 0.1,
     "DEATH_CHANCE" : 0.005,
     "MUTATION_CHANCE" : 0.05,
 }

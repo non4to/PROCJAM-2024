@@ -62,8 +62,8 @@ class Game():
                             elif (event.key == pygame.K_BACKSPACE):
                                 textbox.text = textbox.text[:-1]   
                                 if textbox.text == "": textbox.text = "0"
-                    print(f"pause: {self.pause}")
-                    print(f"config: {self.configurationScreen}")
+                    # print(f"pause: {self.pause}")
+                    # print(f"config: {self.configurationScreen}")
 
             self.update()
             self.before_draw()
@@ -261,10 +261,13 @@ class Game():
         self.textbox_list.append(TextBox("param",self.textbox_list[1].x,self.textbox_list[4].y+tbox_height+spaceBetweenBoxes,tbox_width,tbox_height,(255,0,255),(125,0,125), text_font))
         self.uiMutationPos1 = [self.textbox_list[5].x-95, self.textbox_list[5].y+10]  
         self.uiMutationPos2 = [self.uiMutationPos1[0]+30, self.uiMutationPos1[1]+15]  
-        
+        #Adjust inicial values
+        self.textbox_list[3].text = str(int(self.plantParameter["MITOSIS_CHANCE"]*100))
+        self.textbox_list[4].text = str(int(self.plantParameter["DEATH_CHANCE"]*100))
+        self.textbox_list[5].text = str(int(self.plantParameter["MUTATION_CHANCE"]*100))
         
 def main():
-    A = Game(load_initial_image=Path("flamengo.jpg"))
+    A = Game(load_initial_image=Path("img.jpg"))
     A.game_loop()
 
 
