@@ -1,5 +1,7 @@
 # RGPlants — PROCJAM 2024
 
+![demo](Video/output.gif)
+
 An open-ended Artificial Life simulation where color-coded organisms spread, blend, and mutate across a 64×64 grid. There is no fitness function and no convergence goal — only emergent patterns arising from local interactions between neighbors.
 
 Built with Python and Pygame. Submitted to [PROCJAM 2024](https://itch.io/jam/procjam).
