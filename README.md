@@ -68,13 +68,15 @@ Parameters apply to **newly painted** organisms. Organisms already on screen kee
 
 ## Running locally
 
+In Linux: Download and execute 'Exe File/main'
+
 **Requirements:** Python 3.10+, Pygame
 
 ```bash
 git clone https://github.com/non4to/PROCJAM-2024.git
 cd PROCJAM-2024
 pip install -r requirements.txt
-python main.py
+python3 main.py
 ```
 
 The simulation loads `img.jpg` as the initial color state. You can replace this file with any image — its pixels will be used as the starting gene distribution across the grid.
